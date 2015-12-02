@@ -10,6 +10,10 @@
     GameState.prototype = {
         init : function(level) {
             currentLevel = level;
+
+            if(level == 1) {
+                global.startTime = new Date().getTime();
+            } 
         },
 
         create : function() {

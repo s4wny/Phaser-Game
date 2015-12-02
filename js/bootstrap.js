@@ -19,6 +19,9 @@ var
         },
 
         NUMBER_OF_LEVELS: 3,
+    },
+    global = {
+        startTime: null, // Set by Game.js when uses starts level 1
     };
 
 
