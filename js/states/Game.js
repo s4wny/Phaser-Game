@@ -22,7 +22,8 @@
                 Phaser.Keyboard.LEFT,
                 Phaser.Keyboard.RIGHT,
                 Phaser.Keyboard.UP,
-                Phaser.Keyboard.DOWN
+                Phaser.Keyboard.DOWN,
+                Phaser.Keyboard.SPACEBAR
             ]);
         },
 
@@ -49,7 +50,20 @@
             onTheGround = player.body.onFloor();
             if(onTheGround) {
                 isJumping = false;
+            }   
+
+
+            // Restart game on spacebar or double click
+            if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+                game.state.start('Game', true, false, currentLevel);
             }
+
+            game.input.onTap.add(function(pointer, isDoubleClick) {
+                if(!isDoubleClick)
+                    return;
+
+                game.state.start('Game', true, false, currentLevel);
+            });
         },
 
         /**
