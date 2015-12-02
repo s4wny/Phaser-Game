@@ -38,7 +38,6 @@ BootstrapState.prototype = {
 game.state.add('Bootstrap', BootstrapState);
 game.state.start('Bootstrap');
 
-
 /**
  * Center text to a whole pixel to avoid
  * subpixels which occurs if you just use

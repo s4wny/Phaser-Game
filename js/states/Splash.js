@@ -28,6 +28,10 @@
             // States
             game.load.script('Game', 'js/states/Game.js');
             game.load.script('GameMenu', 'js/states/GameMenu.js');
+            game.load.script('Win', 'js/states/Win.js');
+
+            // Other
+            game.load.image('winScreen', 'assets/gfx/win.png');
 
             // Maps
             for(var i = 1; i <= settings.NUMBER_OF_LEVELS; i++) {
@@ -44,14 +48,15 @@
             with(game.state) {
                 add('Game', GameState);
                 add('GameMenu', GameMenuState);
+                add('Win', WinState);
             }
 
             statusText.text = "Ready!";
             statusText = centerText(statusText);
 
             setTimeout(function() {
-                game.state.start('Game', true, false, 3);
-            }, /*40*/0);
+                game.state.start('Game', true, false, 1);
+            }, 400);
         }
     }
 })();

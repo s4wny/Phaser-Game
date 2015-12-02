@@ -18,6 +18,16 @@
             initializeWorld();
             initializePlayer();
 
+            // Goal collision, 46, 65, 58
+            map.setTileIndexCallback(46, function(s, t) {
+                if(currentLevel == settings.NUMBER_OF_LEVELS) {
+                    game.state.start('Win');
+                }
+                else {
+                    game.state.start('Game', true, false, currentLevel+1);
+                }
+            }, this);
+
             game.input.keyboard.addKeyCapture([
                 Phaser.Keyboard.LEFT,
                 Phaser.Keyboard.RIGHT,
@@ -30,44 +40,19 @@
         update : function() {
             game.physics.arcade.collide(player, groundLayer);
 
-
-            player.body.acceleration.x = 0;
-            
-
-            if(leftInputIsActive()) {
-                player.body.acceleration.x = -settings.PLAYER.ACCELERATION;
-                player.scale.x = -1
+            if(player.body.velocity.x == 0 && Math.abs(player.body.velocity.y) < 2) {
+                player.animations.stop();
             }
-            if(rightInputIsActive()) {
-                player.body.acceleration.x = settings.PLAYER.ACCELERATION;
-                player.scale.x = 1;
-            }
-            if(upInputIsActive() && !isJumping) {
-                player.body.velocity.y = settings.PLAYER.JUMP_SPEED;
-                isJumping = true;
+            else {
+                player.animations.play('walk', 15, true);
             }
 
-            onTheGround = player.body.onFloor();
-            if(onTheGround) {
-                isJumping = false;
-            }   
-
-
-            // Restart game on spacebar or double click
-            if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-                game.state.start('Game', true, false, currentLevel);
-            }
-
-            game.input.onTap.add(function(pointer, isDoubleClick) {
-                if(!isDoubleClick)
-                    return;
-
-                game.state.start('Game', true, false, currentLevel);
-            });
+            handlePlayerMovement();
+            restartMapHook();
         },
 
         /**
-         * 
+         * Useful for visual debuging
          */
         render: function() {
             //game.debug.body(player);
@@ -75,9 +60,44 @@
     }
 
 
-    // ---------------------------------------------------------------
-    //  Helpers
-    // ---------------------------------------------------------------
+    function handlePlayerMovement() {
+        player.body.acceleration.x = 0;
+        
+        if(leftInputIsActive()) {
+            player.body.acceleration.x = -settings.PLAYER.ACCELERATION;
+            player.scale.x = -1
+        }
+        if(rightInputIsActive()) {
+            player.body.acceleration.x = settings.PLAYER.ACCELERATION;
+            player.scale.x = 1;
+        }
+        if(upInputIsActive() && !isJumping) {
+            player.body.velocity.y = settings.PLAYER.JUMP_SPEED;
+            isJumping = true;
+        }
+
+        onTheGround = player.body.onFloor();
+        if(onTheGround) {
+            isJumping = false;
+        } 
+    }
+
+    /**
+     * Restart map on spacebar or double click
+     */
+    function restartMapHook() {
+        // 
+        if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+            game.state.start('Game', true, false, currentLevel);
+        }
+
+        game.input.onTap.add(function(pointer, isDoubleClick) {
+            if(!isDoubleClick)
+                return;
+
+            game.state.start('Game', true, false, currentLevel);
+        });
+    }
 
     /**
      * Load tilemap, set physics, resize
@@ -90,17 +110,6 @@
 
         // Ground collision
         map.setCollision([129, 104, 105]);
-
-        // Goal collision
-        // 46, 65, 58
-        map.setTileIndexCallback(46, function(s, t) {
-            if(currentLevel == settings.NUMBER_OF_LEVELS) {
-                // Win thing
-            }
-            else {
-                game.state.start('Game', true, false, currentLevel+1);
-            }
-        }, this);
 
         
         groundLayer = map.createLayer('ground');
