@@ -7,6 +7,7 @@ var
             ACCELERATION: 1000,
             JUMP_SPEED: -300,
             DRAG: 1000,
+            BOUNCE: 0.5,
             SIZE: {
                 W: 72,
                 H: 97

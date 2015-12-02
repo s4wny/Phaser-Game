@@ -136,7 +136,7 @@
         game.physics.arcade.gravity.y = 350;
 
         with(player.body) {
-            bounce.y = 0.5;
+            bounce.y = settings.PLAYER.BOUNCE;
             collideWorldBounds = true;
             drag.setTo(settings.PLAYER.DRAG, 0);
             maxVelocity.setTo(settings.PLAYER.MAX_SPEED, settings.PLAYER.MAX_SPEED*10);
