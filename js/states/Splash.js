@@ -1,11 +1,6 @@
-(function(Phaser) {
-    var game = new Phaser.Game(1000, 700, Phaser.AUTO, 'game', {
-        preload: preload,
-        create: create,
-        update: update,
-        render: render,
-    });
-    
+(function(){
+    window.SplashState = function(){};
+
     var map;
     var groundLayer;
     var player;
@@ -17,81 +12,83 @@
     var PLAYER_JUMP_SPEED = -300;
     var PLAYER_DRAG = 1000;
     var PLAYER_SIZE = {
-        sprite    : {w: 72, h:97}
+        sprite : {w: 72, h:97}
     };
 
-    
-    function preload() {
-        game.load.tilemap('tilemap', 'assets/levels/1.json', null, Phaser.Tilemap.TILED_JSON);
-        game.load.image('tiles', 'assets/tiles/base.png');
-    
-        game.load.spritesheet('player', 'assets/p1_walk.png', PLAYER_SIZE.sprite.w, PLAYER_SIZE.sprite.h, 11);
-    }
-    
-    
-    function create() {
-        game.physics.startSystem(Phaser.Physics.ARCADE);
-    
-        initializeWorld();
-        initializePlayer();
-    
-        game.input.keyboard.addKeyCapture([
-            Phaser.Keyboard.LEFT,
-            Phaser.Keyboard.RIGHT,
-            Phaser.Keyboard.UP,
-            Phaser.Keyboard.DOWN
-        ]);
-    }
-    
-    function update() {
-        game.physics.arcade.collide(player, groundLayer);
+
+    SplashState.prototype = {
+        preload : function() {
+            game.load.tilemap('tilemap', 'assets/levels/1.json', null, Phaser.Tilemap.TILED_JSON);
+            game.load.image('tiles', 'assets/tiles/base.png');
+
+            game.load.spritesheet('player', 'assets/p1_walk.png', PLAYER_SIZE.sprite.w, PLAYER_SIZE.sprite.h, 11);
+        },
+
+        create : function() {
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+
+            initializeWorld();
+            initializePlayer();
+
+            game.input.keyboard.addKeyCapture([
+                    Phaser.Keyboard.LEFT,
+                    Phaser.Keyboard.RIGHT,
+                    Phaser.Keyboard.UP,
+                    Phaser.Keyboard.DOWN
+            ]);
+        },
+
+        update : function() {
+            game.physics.arcade.collide(player, groundLayer);
 
 
-        player.body.acceleration.x = 0;
+            player.body.acceleration.x = 0;
 
-        if(leftInputIsActive()) {
-            player.body.acceleration.x = -PLAYER_ACCELERATION;
+            if(leftInputIsActive()) {
+                player.body.acceleration.x = -PLAYER_ACCELERATION;
+            }
+            if(rightInputIsActive()) {
+                player.body.acceleration.x = PLAYER_ACCELERATION;
+            }
+            if(upInputIsActive() && !isJumping) {
+                player.body.velocity.y = PLAYER_JUMP_SPEED;
+                isJumping = true;
+            }
+
+            onTheGround = player.body.onFloor();
+            if(onTheGround) {
+                isJumping = false;
+            }
+        },
+
+        /**
+         * 
+         */
+        render: function() {
+            //game.debug.body(player);
         }
-        if(rightInputIsActive()) {
-            player.body.acceleration.x = PLAYER_ACCELERATION;
-        }
-        if(upInputIsActive() && !isJumping) {
-            player.body.velocity.y = PLAYER_JUMP_SPEED;
-            isJumping = true;
-        }
-
-        onTheGround = player.body.onFloor();
-        if(onTheGround) {
-            isJumping = false;
-        }
     }
 
 
-    /**
-     * Useful for visual debuging
-     */
-    function render() {
-        //game.debug.body(player);
-    }
 
     // ---------------------------------------------------------------
     //  Helpers
     // ---------------------------------------------------------------
-    
+
     /**
      * Load tilemap, set physics, resize
      */
     function initializeWorld() {
         game.stage.backgroundColor = 0xd0f4f7;
-    
+
         map = game.add.tilemap('tilemap');
         map.addTilesetImage('tiles_spritesheet_fixed', 'tiles');
-    
+
         map.setCollision([129, 104, 105]);
-    
+
         
         groundLayer = map.createLayer('ground');
-    
+
         // This resizes the game world to match the layer dimensions
         groundLayer.resizeWorld();
     }
@@ -103,7 +100,7 @@
         player = game.add.sprite(200, 100, 'player');
         var walk = player.animations.add('walk');
         player.animations.play('walk', 15, true);
-    
+
         game.physics.enable(player);
         game.physics.arcade.gravity.y = 350;
 
@@ -144,5 +141,4 @@
         isActive |= game.input.activePointer.isDown && game.input.activePointer.y < game.width / 4;
         return isActive;
     }
-
-})(Phaser);
+})();
