@@ -2,7 +2,8 @@
     var game = new Phaser.Game(1000, 700, Phaser.AUTO, 'game', {
         preload: preload,
         create: create,
-        update: update
+        update: update,
+        render: render,
     });
     
     var map;
@@ -15,12 +16,16 @@
     var PLAYER_ACCELERATION = 1000;
     var PLAYER_JUMP_SPEED = -300;
     var PLAYER_DRAG = 1000;
+    var PLAYER_SIZE = {
+        sprite    : {w: 72, h:97}
+    };
+
     
     function preload() {
         game.load.tilemap('tilemap', 'assets/levels/1.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.image('tiles', 'assets/tiles/base.png');
     
-        game.load.spritesheet('player', 'assets/p1_walk.png', 72, 97, 11);
+        game.load.spritesheet('player', 'assets/p1_walk.png', PLAYER_SIZE.sprite.w, PLAYER_SIZE.sprite.h, 11);
     }
     
     
@@ -40,6 +45,7 @@
     
     function update() {
         game.physics.arcade.collide(player, groundLayer);
+
 
         player.body.acceleration.x = 0;
 
@@ -61,6 +67,12 @@
     }
 
 
+    /**
+     * Useful for visual debuging
+     */
+    function render() {
+        //game.debug.body(player);
+    }
 
     // ---------------------------------------------------------------
     //  Helpers
@@ -75,7 +87,7 @@
         map = game.add.tilemap('tilemap');
         map.addTilesetImage('tiles_spritesheet_fixed', 'tiles');
     
-        map.setCollision([103, 104, 128]);
+        map.setCollision([129, 104, 105]);
     
         
         groundLayer = map.createLayer('ground');
@@ -101,6 +113,10 @@
             collideWorldBounds = true;
             drag.setTo(PLAYER_DRAG, 0);
             maxVelocity.setTo(PLAYER_MAX_SPEED, PLAYER_MAX_SPEED*10);
+
+            var subtractWidth = 28;
+            var subtractHeight = 10;
+            setSize(PLAYER_SIZE.sprite.w - subtractWidth, PLAYER_SIZE.sprite.h - subtractHeight, subtractWidth/2, subtractHeight);
         }
 
         game.camera.follow(player);
